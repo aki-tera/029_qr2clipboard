@@ -1,3 +1,20 @@
+# 不要なフォルダ
+__pycache__
+test
+data
+
+# 不要なファイル
+.gitignore
+*.bat
+*.exe
+*.txt
+news/*.jpg
+test*.py
+*.csv
+*.xls
+*.xlsx
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
