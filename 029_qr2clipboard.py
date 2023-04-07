@@ -35,6 +35,28 @@ class View:
             master (class): main window
             model (class): Webcam related
         """
+        # インスタンス化
+        self.master = master
+        self.model = model
+
+        # フォントの設定
+        # ラベルフレーム用
+        self.font_frame = font.Font(family="Meiryo UI", size=15, weight="normal")
+        # ボタン用
+        self.font_buttom = font.Font(family="Meiryo UI", size=20, weight="bold")
+
+        # フレーム設定
+        self.frame1 = tk.LabelFrame(self.master, text="元画像", font=self.font_frame, padx=10, pady=10)
+        self.frame2 = tk.LabelFrame(self.master, text="計測距離", font=self.font_frame, padx=10, pady=10)
+
+        self.frame1.grid(column=0, row=0)
+        self.frame2.grid(column=0, row=1)
+        
+        self.button1 = tk.Button(self.frame1, text="開始", font=self.font_buttom)
+        self.button2 = tk.Button(self.frame2, text="終了", font=self.font_buttom)
+
+        self.button1.grid(column=0, row=0)
+        self.button2.grid(column=0, row=0)
 
 
 class Controller():
@@ -47,6 +69,18 @@ class Controller():
             model (class): Webcam related
             view (class): tkinter related
         """
+        # インスタンス化
+        self.master = master
+        self.model = model
+        self.view = view
+
+    def press_start_button(self):
+        print("Start")
+
+    def press_close_button(self):
+        # 終了処理
+        # ウイジェットの終了
+        self.master.destroy()
 
 
 class Application(tk.Frame):
@@ -70,7 +104,7 @@ class Application(tk.Frame):
         # インスタンス化
         self.model = Model()
         
-        master.geometry()
+        master.geometry("500x500")
         master.title("QRコード2クリップボード")
 
         # ウインドウサイズの変更不可
@@ -81,8 +115,8 @@ class Application(tk.Frame):
         self.controller = Controller(master, self.model, self.view)
 
         # ボタンのコマンド設定
-        # self.view.button31["command"] = self.controller.press_start_button
-        # self.view.button32["command"] = self.controller.press_close_button
+        self.view.button1["command"] = self.controller.press_start_button
+        self.view.button2["command"] = self.controller.press_close_button
 
 
 def main():
