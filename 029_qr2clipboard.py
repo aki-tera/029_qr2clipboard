@@ -1,6 +1,9 @@
 import tkinter as tk
-from PIL import Image, ImageTk
+from tkinter import ttk
 from tkinter import font
+
+from PIL import Image, ImageTk
+
 
 import cv2
 import numpy as np
@@ -19,6 +22,7 @@ class Model:
         1. load setting.json.
         2. create instance variables.
         """
+        self.qr_text = "https://github.com/aki-tera/022_distance_estimation_by_camera/blob/f0110ebdd98178d6dbd6815a84df0a03c434d7af/022_distance_estimation_by_camera.py#L245"
 
 
 class View:
@@ -39,24 +43,36 @@ class View:
         self.master = master
         self.model = model
 
+        style = ttk.Style()
+        style.theme_use("vista")
+
         # フォントの設定
         # ラベルフレーム用
-        self.font_frame = font.Font(family="Meiryo UI", size=15, weight="normal")
+        style.configure("font.TLabelframe", font=30)
         # ボタン用
-        self.font_buttom = font.Font(family="Meiryo UI", size=20, weight="bold")
+        style.configure("font.TButton", font=80)
 
         # フレーム設定
-        self.frame1 = tk.LabelFrame(self.master, text="元画像", font=self.font_frame, padx=10, pady=10)
-        self.frame2 = tk.LabelFrame(self.master, text="計測距離", font=self.font_frame, padx=10, pady=10)
+        self.frame1 = ttk.LabelFrame(self.master, text="カメラ画像", style="font.TLabelframe", relief=tk.GROOVE)
+        self.frame2 = ttk.LabelFrame(self.master, text="コマンド", style="font.TLabelframe", relief=tk.GROOVE)
 
-        self.frame1.grid(column=0, row=0)
-        self.frame2.grid(column=0, row=1)
+        self.frame1.grid(column=0, row=0, padx=10, pady=10)
+        self.frame2.grid(column=0, row=1, sticky=tk.W + tk.E + tk.S + tk.N, padx=10)
+
+         # フレーム1：オリジナル画像
+        self.canvas1 = tk.Canvas(self.frame1, width=500, height=300)
+        self.canvas1.grid(sticky=tk.W + tk.E + tk.S + tk.N, padx=10, pady=10)
+
+        self.label21 = ttk.Label(self.frame2, text=self.model.qr_text, wraplength=250, anchor="w", justify="left")
+        self.button22 = ttk.Button(self.frame2, text="開始", padding=[5,15], style="font.TButton")
+        self.button23 = ttk.Button(self.frame2, text="終了", padding=[5,15], style="font.TButton")
         
-        self.button1 = tk.Button(self.frame1, text="開始", font=self.font_buttom)
-        self.button2 = tk.Button(self.frame2, text="終了", font=self.font_buttom)
+        self.label21.grid(column=0, row=0, columnspan=3, padx=10, pady=10)
+        self.button22.grid(column=3, row=0, padx=10, pady=10)
+        self.button23.grid(column=4, row=0, padx=10, pady=10)
+        
 
-        self.button1.grid(column=0, row=0)
-        self.button2.grid(column=0, row=0)
+        self.frame2.grid_columnconfigure(1, weight=1)
 
 
 class Controller():
@@ -73,6 +89,8 @@ class Controller():
         self.master = master
         self.model = model
         self.view = view
+
+    # カメラ起動処理
 
     def press_start_button(self):
         print("Start")
@@ -104,7 +122,7 @@ class Application(tk.Frame):
         # インスタンス化
         self.model = Model()
         
-        master.geometry("500x500")
+        master.geometry("550x480")
         master.title("QRコード2クリップボード")
 
         # ウインドウサイズの変更不可
@@ -115,8 +133,8 @@ class Application(tk.Frame):
         self.controller = Controller(master, self.model, self.view)
 
         # ボタンのコマンド設定
-        self.view.button1["command"] = self.controller.press_start_button
-        self.view.button2["command"] = self.controller.press_close_button
+        self.view.button22["command"] = self.controller.press_start_button
+        self.view.button23["command"] = self.controller.press_close_button
 
 
 def main():
