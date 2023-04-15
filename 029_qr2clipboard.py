@@ -38,6 +38,19 @@ class Model:
         # 表示内容の初期化
         self.qr_text = [self.cap.get(i) for i in range(20)]
 
+    def compute_camera(self):
+        # cv2の処理をすべて実施
+
+        # ビデオキャプチャから画像を取得
+        ret, frame = self.cap.read()
+
+        # sizeを取得
+        # (縦、横、色)
+        Height, Width = frame.shape[:2]
+
+        # 処理できる形に変換
+        self.img1 = cv2.resize(frame, (500, int(Height * Width / 500)))
+
 
 class View:
     """tkinter関連
@@ -102,6 +115,8 @@ class Controller():
         self.master = master
         self.model = model
         self.view = view
+
+        
 
     def press_start_button(self):
         print(self.model.qr_text)
