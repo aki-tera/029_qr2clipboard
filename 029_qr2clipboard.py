@@ -100,6 +100,13 @@ class View:
         
         self.frame2.grid_columnconfigure(1, weight=1)
 
+        # ディスプレイ表示
+        self.display_image()
+        
+    def display_image(self):
+        print(self.model.qr_text[0:3])
+        self.master.after(1000, self.display_image)
+
 
 class Controller():
     """制御関連
