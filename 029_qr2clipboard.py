@@ -22,7 +22,21 @@ class Model:
         1. load setting.json.
         2. create instance variables.
         """
-        self.qr_text = "https://github.com/aki-tera/022_distance_estimation_by_camera/blob/f0110ebdd98178d6dbd6815a84df0a03c434d7af/022_distance_estimation_by_camera.py#L245"
+
+        # カメラ起動
+        self.aruco = cv2.aruco
+        self.dictionary = self.aruco.getPredefinedDictionary(self.aruco.DICT_4X4_50)
+
+        # CAP_DSHOWを設定すると、終了時のterminating async callbackのエラーは出なくなる
+        # ただし場合によっては、フレームレートが劇遅になる可能性あり
+        # self.cap = cv2.VideoCapture(self.camera_setting["CAM"]["ID"], cv2.CAP_DSHOW)
+        self.cap = cv2.VideoCapture(0)
+
+        # self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+
+        # 表示内容の初期化
+        self.qr_text = [self.cap.get(i) for i in range(20)]
 
 
 class View:
@@ -90,10 +104,8 @@ class Controller():
         self.model = model
         self.view = view
 
-    # カメラ起動処理
-
     def press_start_button(self):
-        print("Start")
+        print(self.model.qr_text)
 
     def press_close_button(self):
         # 終了処理
