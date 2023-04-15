@@ -73,7 +73,7 @@ class View:
         self.frame1.grid(column=0, row=0, padx=10, pady=10)
         self.frame2.grid(column=0, row=1, sticky=tk.W + tk.E + tk.S + tk.N, padx=10)
 
-         # フレーム1：オリジナル画像
+        # フレーム1：オリジナル画像
         self.canvas1 = tk.Canvas(self.frame1, width=500, height=300)
         self.canvas1.grid(sticky=tk.W + tk.E + tk.S + tk.N, padx=10, pady=10)
 
@@ -85,7 +85,6 @@ class View:
         self.button22.grid(column=3, row=0, padx=10, pady=10)
         self.button23.grid(column=4, row=0, padx=10, pady=10)
         
-
         self.frame2.grid_columnconfigure(1, weight=1)
 
 
@@ -109,6 +108,8 @@ class Controller():
 
     def press_close_button(self):
         # 終了処理
+        # カメラリソースの解放
+        self.model.cap.release()
         # ウイジェットの終了
         self.master.destroy()
 
