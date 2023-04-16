@@ -1,3 +1,5 @@
+import unicodedata
+
 import tkinter as tk
 from tkinter import ttk
 from tkinter import font
@@ -7,6 +9,27 @@ from PIL import Image, ImageTk
 
 import cv2
 import numpy as np
+
+def cut_text(original_text, max_length):
+    """Reduces the input string to the specified number of characters
+
+    Args:
+        original_text (str): the string to decrement
+        max_length (int): maximum number of characters to output
+
+    Returns:
+        _type_: the processed string
+    """
+    char_count = 0
+    new_text = ""
+    for i in original_text:
+        char_count += (2 if unicodedata.east_asian_width(i) in "FWA" else 1)
+        if char_count <= max_length:
+            new_text += i
+        else:
+            break
+    return new_text
+
 
 
 class Model:
@@ -22,7 +45,36 @@ class Model:
         1. load setting.json.
         2. create instance variables.
         """
-        self.qr_text = "https://github.com/aki-tera/022_distance_estimation_by_camera/blob/f0110ebdd98178d6dbd6815a84df0a03c434d7af/022_distance_estimation_by_camera.py#L245"
+
+        # カメラ起動
+        self.aruco = cv2.aruco
+        self.dictionary = self.aruco.getPredefinedDictionary(self.aruco.DICT_4X4_50)
+
+        # CAP_DSHOWを設定すると、終了時のterminating async callbackのエラーは出なくなる
+        # ただし場合によっては、フレームレートが劇遅になる可能性あり
+        # self.cap = cv2.VideoCapture(self.camera_setting["CAM"]["ID"], cv2.CAP_DSHOW)
+        self.cap = cv2.VideoCapture(0)
+
+        # self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+
+        # 表示内容の初期化
+        self.qr_text = cut_text((",".join([str(self.cap.get(i)) for i in range(20)])), 30)
+
+    def compute_camera(self):
+        # cv2の処理をすべて実施
+
+        # ビデオキャプチャから画像を取得
+        ret, frame = self.cap.read()
+
+        # sizeを取得
+        # (縦、横、色)
+        Height, Width = frame.shape[:2]
+
+        # 処理できる形に変換
+        img1 = cv2.resize(frame, (500, int(Height * (500 / Width))))
+
+        return img1
 
 
 class View:
@@ -59,7 +111,7 @@ class View:
         self.frame1.grid(column=0, row=0, padx=10, pady=10)
         self.frame2.grid(column=0, row=1, sticky=tk.W + tk.E + tk.S + tk.N, padx=10)
 
-         # フレーム1：オリジナル画像
+        # フレーム1：オリジナル画像
         self.canvas1 = tk.Canvas(self.frame1, width=500, height=300)
         self.canvas1.grid(sticky=tk.W + tk.E + tk.S + tk.N, padx=10, pady=10)
 
@@ -71,8 +123,21 @@ class View:
         self.button22.grid(column=3, row=0, padx=10, pady=10)
         self.button23.grid(column=4, row=0, padx=10, pady=10)
         
-
         self.frame2.grid_columnconfigure(1, weight=1)
+
+        # ディスプレイ表示
+        self.display_image()
+        
+    def display_image(self):
+        # マーク付きのオリジナル画像を表示する
+        self.img1 = cv2.cvtColor(self.model.compute_camera(), cv2.COLOR_BGR2RGB)
+        # 複数のインスタンスがある場合、インスタンをmasterで指示しないとエラーが発生する場合がある
+        # エラー内容：image "pyimage##" doesn't exist
+        self.im1 = ImageTk.PhotoImage(image=Image.fromarray(self.img1), master=self.frame1)
+        self.canvas1.create_image(0, 0, anchor='nw', image=self.im1)
+
+        print(self.model.qr_text[0:3])
+        self.master.after(1000, self.display_image)
 
 
 class Controller():
@@ -90,13 +155,15 @@ class Controller():
         self.model = model
         self.view = view
 
-    # カメラ起動処理
+        
 
     def press_start_button(self):
-        print("Start")
+        print(self.model.qr_text)
 
     def press_close_button(self):
         # 終了処理
+        # カメラリソースの解放
+        self.model.cap.release()
         # ウイジェットの終了
         self.master.destroy()
 
