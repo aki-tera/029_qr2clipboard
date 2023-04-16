@@ -1,3 +1,5 @@
+import unicodedata
+
 import tkinter as tk
 from tkinter import ttk
 from tkinter import font
@@ -7,6 +9,27 @@ from PIL import Image, ImageTk
 
 import cv2
 import numpy as np
+
+def cut_text(original_text, max_length):
+    """Reduces the input string to the specified number of characters
+
+    Args:
+        original_text (str): the string to decrement
+        max_length (int): maximum number of characters to output
+
+    Returns:
+        _type_: the processed string
+    """
+    char_count = 0
+    new_text = ""
+    for i in original_text:
+        char_count += (2 if unicodedata.east_asian_width(i) in "FWA" else 1)
+        if char_count <= max_length:
+            new_text += i
+        else:
+            break
+    return new_text
+
 
 
 class Model:
@@ -36,7 +59,7 @@ class Model:
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
 
         # 表示内容の初期化
-        self.qr_text = [self.cap.get(i) for i in range(20)]
+        self.qr_text = cut_text((",".join([str(self.cap.get(i)) for i in range(20)])), 30)
 
     def compute_camera(self):
         # cv2の処理をすべて実施
