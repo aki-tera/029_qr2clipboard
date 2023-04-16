@@ -72,7 +72,9 @@ class Model:
         Height, Width = frame.shape[:2]
 
         # 処理できる形に変換
-        self.img1 = cv2.resize(frame, (500, int(Height * Width / 500)))
+        img1 = cv2.resize(frame, (500, int(Height * (500 / Width))))
+
+        return img1
 
 
 class View:
@@ -127,6 +129,13 @@ class View:
         self.display_image()
         
     def display_image(self):
+        # マーク付きのオリジナル画像を表示する
+        self.img1 = cv2.cvtColor(self.model.compute_camera(), cv2.COLOR_BGR2RGB)
+        # 複数のインスタンスがある場合、インスタンをmasterで指示しないとエラーが発生する場合がある
+        # エラー内容：image "pyimage##" doesn't exist
+        self.im1 = ImageTk.PhotoImage(image=Image.fromarray(self.img1), master=self.frame1)
+        self.canvas1.create_image(0, 0, anchor='nw', image=self.im1)
+
         print(self.model.qr_text[0:3])
         self.master.after(1000, self.display_image)
 
