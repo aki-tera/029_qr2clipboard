@@ -47,6 +47,9 @@ class Model:
         2. create instance variables.
         """
 
+        # インスタンス変数の設定
+        self.qr_text = "QRコードをカメラに表示させて下さい"
+
         # カメラ起動
         self.aruco = cv2.aruco
         self.dictionary = self.aruco.getPredefinedDictionary(self.aruco.DICT_4X4_50)
@@ -58,9 +61,6 @@ class Model:
 
         # self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-
-        # 表示内容の初期化
-        self.qr_text = cut_text((",".join([str(self.cap.get(i)) for i in range(20)])), 30)
 
     def compute_camera(self):
         # cv2の処理をすべて実施
@@ -76,6 +76,9 @@ class Model:
                 retval, decoded_info, size_info, points, _, _ = value[0]
                 print(retval.decode('utf-8'), decoded_info, size_info, points)
 
+                # 表示内容の初期化
+                self.qr_text = cut_text(retval.decode('utf-8'), 30)
+
         # sizeを取得
         # (縦、横、色)
         Height, Width = frame.shape[:2]
@@ -83,7 +86,8 @@ class Model:
         # 処理できる形に変換
         img1 = cv2.resize(frame, (500, int(Height * (500 / Width))))
 
-        return img1
+        return img1 
+
 
 
 class View:
@@ -145,7 +149,10 @@ class View:
         self.im1 = ImageTk.PhotoImage(image=Image.fromarray(self.img1), master=self.frame1)
         self.canvas1.create_image(0, 0, anchor='nw', image=self.im1)
 
-        print(self.model.qr_text[0:3])
+        # ラベル更新
+        self.label21['text'] = self.model.qr_text
+
+        # QRコードの読み取り更新
         self.master.after(1000, self.display_image)
 
 
