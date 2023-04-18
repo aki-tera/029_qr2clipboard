@@ -6,9 +6,11 @@ from tkinter import font
 
 from PIL import Image, ImageTk
 
-
 import cv2
+from pyzbar.pyzbar import decode, ZBarSymbol
+
 import numpy as np
+
 
 def cut_text(original_text, max_length):
     """Reduces the input string to the specified number of characters
@@ -29,7 +31,6 @@ def cut_text(original_text, max_length):
         else:
             break
     return new_text
-
 
 
 class Model:
@@ -66,6 +67,14 @@ class Model:
 
         # ビデオキャプチャから画像を取得
         ret, frame = self.cap.read()
+
+        if ret:
+            # QRコードのでコード
+            value = decode(frame, symbols=[ZBarSymbol.QRCODE])
+
+            if value != []:
+                retval, decoded_info, size_info, points, _, _ = value[0]
+                print(retval.decode('utf-8'), decoded_info, size_info, points)
 
         # sizeを取得
         # (縦、横、色)
