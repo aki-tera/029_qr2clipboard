@@ -74,10 +74,10 @@ class Model:
 
             if value != []:
                 retval, decoded_info, size_info, points, _, _ = value[0]
-                print(retval.decode('utf-8'), decoded_info, size_info, points)
+                # print(retval.decode('utf-8'), decoded_info, size_info, points)
 
                 # 表示内容の初期化
-                self.qr_text = cut_text(retval.decode('utf-8'), 30)
+                self.qr_text = retval.decode('utf-8')
 
         # sizeを取得
         # (縦、横、色)
@@ -119,7 +119,7 @@ class View:
 
         # フレーム設定
         self.frame1 = ttk.LabelFrame(self.master, text="カメラ画像", style="font.TLabelframe", relief=tk.GROOVE)
-        self.frame2 = ttk.LabelFrame(self.master, text="コマンド", style="font.TLabelframe", relief=tk.GROOVE)
+        self.frame2 = ttk.LabelFrame(self.master, text="QRコードの内容", style="font.TLabelframe", relief=tk.GROOVE)
 
         self.frame1.grid(column=0, row=0, padx=10, pady=10)
         self.frame2.grid(column=0, row=1, sticky=tk.W + tk.E + tk.S + tk.N, padx=10)
@@ -150,10 +150,10 @@ class View:
         self.canvas1.create_image(0, 0, anchor='nw', image=self.im1)
 
         # ラベル更新
-        self.label21['text'] = self.model.qr_text
+        self.label21['text'] = cut_text(self.model.qr_text, 130)
 
         # QRコードの読み取り更新
-        self.master.after(1000, self.display_image)
+        self.master.after(100, self.display_image)
 
 
 class Controller():
