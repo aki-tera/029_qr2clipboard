@@ -6,9 +6,11 @@ from tkinter import font
 
 from PIL import Image, ImageTk
 
-
 import cv2
+from pyzbar.pyzbar import decode, ZBarSymbol
+
 import numpy as np
+
 
 def cut_text(original_text, max_length):
     """Reduces the input string to the specified number of characters
@@ -31,7 +33,6 @@ def cut_text(original_text, max_length):
     return new_text
 
 
-
 class Model:
     """Webcam関連
     1. カメライメージの取得
@@ -46,6 +47,9 @@ class Model:
         2. create instance variables.
         """
 
+        # インスタンス変数の設定
+        self.qr_text = "QRコードをカメラに表示させて下さい"
+
         # カメラ起動
         self.aruco = cv2.aruco
         self.dictionary = self.aruco.getPredefinedDictionary(self.aruco.DICT_4X4_50)
@@ -57,15 +61,35 @@ class Model:
 
         # self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-
-        # 表示内容の初期化
-        self.qr_text = cut_text((",".join([str(self.cap.get(i)) for i in range(20)])), 30)
+    
+    def release_caremra(self):
+        """release webcam resource.
+        """
+        # カメラリソース解放
+        self.cap.release()
 
     def compute_camera(self):
         # cv2の処理をすべて実施
 
         # ビデオキャプチャから画像を取得
         ret, frame = self.cap.read()
+
+        if ret:
+            # QRコードのでコード
+            value = decode(frame, symbols=[ZBarSymbol.QRCODE])
+
+            if value != []:
+                retval, decoded_info, size_info, points, _, _ = value[0]
+                # print(retval.decode('utf-8'), decoded_info, size_info, points)
+
+                # QRコードの内容を代入
+                self.qr_text = retval.decode('utf-8')
+
+                # ポジションデータを取得
+                self.np_points = np.array(points)
+
+                # QRコードを枠で囲む
+                frame = cv2.polylines(frame, [self.np_points], True, (255, 55, 0), thickness=5, lineType=cv2.LINE_AA)
 
         # sizeを取得
         # (縦、横、色)
@@ -106,7 +130,7 @@ class View:
 
         # フレーム設定
         self.frame1 = ttk.LabelFrame(self.master, text="カメラ画像", style="font.TLabelframe", relief=tk.GROOVE)
-        self.frame2 = ttk.LabelFrame(self.master, text="コマンド", style="font.TLabelframe", relief=tk.GROOVE)
+        self.frame2 = ttk.LabelFrame(self.master, text="QRコードの内容", style="font.TLabelframe", relief=tk.GROOVE)
 
         self.frame1.grid(column=0, row=0, padx=10, pady=10)
         self.frame2.grid(column=0, row=1, sticky=tk.W + tk.E + tk.S + tk.N, padx=10)
@@ -136,8 +160,11 @@ class View:
         self.im1 = ImageTk.PhotoImage(image=Image.fromarray(self.img1), master=self.frame1)
         self.canvas1.create_image(0, 0, anchor='nw', image=self.im1)
 
-        print(self.model.qr_text[0:3])
-        self.master.after(1000, self.display_image)
+        # ラベル更新
+        self.label21['text'] = cut_text(self.model.qr_text, 130)
+
+        # QRコードの読み取り更新
+        self.master.after(100, self.display_image)
 
 
 class Controller():
@@ -155,15 +182,13 @@ class Controller():
         self.model = model
         self.view = view
 
-        
-
     def press_start_button(self):
         print(self.model.qr_text)
 
     def press_close_button(self):
         # 終了処理
-        # カメラリソースの解放
-        self.model.cap.release()
+        # カメラリソース解放
+        self.model.release_caremra()
         # ウイジェットの終了
         self.master.destroy()
 
