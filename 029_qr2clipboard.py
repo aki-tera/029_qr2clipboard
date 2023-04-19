@@ -51,6 +51,10 @@ class Model:
         self.qr_text = "QRコードをカメラに表示させて下さい"
 
         # カメラ起動
+        self.open_camera()
+
+    def open_camera(self):
+        # カメラ起動
         self.aruco = cv2.aruco
         self.dictionary = self.aruco.getPredefinedDictionary(self.aruco.DICT_4X4_50)
 
