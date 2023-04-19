@@ -61,6 +61,12 @@ class Model:
 
         # self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+    
+    def release_caremra(self):
+        """release webcam resource.
+        """
+        # カメラリソース解放
+        self.cap.release()
 
     def compute_camera(self):
         # cv2の処理をすべて実施
@@ -76,8 +82,14 @@ class Model:
                 retval, decoded_info, size_info, points, _, _ = value[0]
                 # print(retval.decode('utf-8'), decoded_info, size_info, points)
 
-                # 表示内容の初期化
+                # QRコードの内容を代入
                 self.qr_text = retval.decode('utf-8')
+
+                # ポジションデータを取得
+                self.np_points = np.array(points)
+
+                # QRコードを枠で囲む
+                frame = cv2.polylines(frame, [self.np_points], True, (255, 55, 0), thickness=5, lineType=cv2.LINE_AA)
 
         # sizeを取得
         # (縦、横、色)
@@ -86,8 +98,7 @@ class Model:
         # 処理できる形に変換
         img1 = cv2.resize(frame, (500, int(Height * (500 / Width))))
 
-        return img1 
-
+        return img1
 
 
 class View:
@@ -171,15 +182,13 @@ class Controller():
         self.model = model
         self.view = view
 
-        
-
     def press_start_button(self):
         print(self.model.qr_text)
 
     def press_close_button(self):
         # 終了処理
-        # カメラリソースの解放
-        self.model.cap.release()
+        # カメラリソース解放
+        self.model.release_caremra()
         # ウイジェットの終了
         self.master.destroy()
 
