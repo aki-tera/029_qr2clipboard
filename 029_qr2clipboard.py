@@ -48,7 +48,7 @@ class Model:
         """
 
         # QRコードの内容を保存する
-        self.qr_text = "QRコードをカメラに表示させて下さい"
+        self.qr_text = "Please shoot QR Code on camera."
 
         # インスタンス変数の設定
         self.qr_text_short = tk.StringVar()
@@ -137,8 +137,8 @@ class View:
         style.configure("font.TButton", font=80)
 
         # フレーム設定
-        self.frame1 = ttk.LabelFrame(self.master, text="カメラ画像", style="font.TLabelframe", relief=tk.GROOVE)
-        self.frame2 = ttk.LabelFrame(self.master, text="QRコードの内容", style="font.TLabelframe", relief=tk.GROOVE)
+        self.frame1 = ttk.LabelFrame(self.master, text="Camera image", style="font.TLabelframe", relief=tk.GROOVE)
+        self.frame2 = ttk.LabelFrame(self.master, text="QR Code Contents", style="font.TLabelframe", relief=tk.GROOVE)
 
         self.frame1.grid(column=0, row=0, padx=10, pady=10)
         self.frame2.grid(column=0, row=1, sticky=tk.W + tk.E + tk.S + tk.N, padx=10)
@@ -149,8 +149,8 @@ class View:
 
         # Labelはウイジェット変数で表示内容を制御する
         self.label21 = ttk.Label(self.frame2, wraplength=250, anchor="w", justify="left")
-        self.button22 = ttk.Button(self.frame2, text="開始", padding=[5,15], style="font.TButton")
-        self.button23 = ttk.Button(self.frame2, text="終了", padding=[5,15], style="font.TButton")
+        self.button22 = ttk.Button(self.frame2, text="Clipboard", padding=[5, 15], style="font.TButton")
+        self.button23 = ttk.Button(self.frame2, text="Browser", padding=[5, 15], style="font.TButton")
         
         self.label21.grid(column=0, row=0, columnspan=3, padx=10, pady=10)
         self.button22.grid(column=3, row=0, padx=10, pady=10)
@@ -166,8 +166,8 @@ class View:
         self.img1 = cv2.cvtColor(self.model.compute_camera(), cv2.COLOR_BGR2RGB)
         # 複数のインスタンスがある場合、インスタンスをmasterで指示しないとエラーが発生する場合がある
         # エラー内容：image "pyimage##" doesn't exist
-        self.im1 = ImageTk.PhotoImage(image=Image.fromarray(self.img1), master=self.frame1)
-        self.canvas1.create_image(0, 0, anchor='nw', image=self.im1)
+        self.img2 = ImageTk.PhotoImage(image=Image.fromarray(self.img1), master=self.frame1)
+        self.canvas1.create_image(0, 0, anchor='nw', image=self.img2)
 
         # QRコードの読み取り更新
         self.master.after(50, self.display_image)
@@ -224,7 +224,7 @@ class Application(tk.Frame):
         self.model = Model()
         
         master.geometry("550x480")
-        master.title("QRコード2クリップボード")
+        master.title("QR code to clipboard")
 
         # ウインドウサイズの変更不可
         master.resizable(width=False, height=False)
@@ -246,4 +246,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
