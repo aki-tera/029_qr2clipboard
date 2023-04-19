@@ -47,9 +47,17 @@ class Model:
         2. create instance variables.
         """
 
-        # インスタンス変数の設定
-        self.qr_text = "QRコードをカメラに表示させて下さい"
+        # QRコードの内容を保存する
+        self.qr_text = "Please shoot QR Code on camera."
 
+        # インスタンス変数の設定
+        self.qr_text_short = tk.StringVar()
+        self.qr_text_short.set(self.qr_text)
+
+        # カメラ起動
+        self.open_camera()
+
+    def open_camera(self):
         # カメラ起動
         self.aruco = cv2.aruco
         self.dictionary = self.aruco.getPredefinedDictionary(self.aruco.DICT_4X4_50)
@@ -80,10 +88,10 @@ class Model:
 
             if value != []:
                 retval, decoded_info, size_info, points, _, _ = value[0]
-                # print(retval.decode('utf-8'), decoded_info, size_info, points)
 
                 # QRコードの内容を代入
                 self.qr_text = retval.decode('utf-8')
+                self.qr_text_short.set(cut_text(self.qr_text, 130))
 
                 # ポジションデータを取得
                 self.np_points = np.array(points)
@@ -129,8 +137,8 @@ class View:
         style.configure("font.TButton", font=80)
 
         # フレーム設定
-        self.frame1 = ttk.LabelFrame(self.master, text="カメラ画像", style="font.TLabelframe", relief=tk.GROOVE)
-        self.frame2 = ttk.LabelFrame(self.master, text="QRコードの内容", style="font.TLabelframe", relief=tk.GROOVE)
+        self.frame1 = ttk.LabelFrame(self.master, text="Camera image", style="font.TLabelframe", relief=tk.GROOVE)
+        self.frame2 = ttk.LabelFrame(self.master, text="QR Code Contents", style="font.TLabelframe", relief=tk.GROOVE)
 
         self.frame1.grid(column=0, row=0, padx=10, pady=10)
         self.frame2.grid(column=0, row=1, sticky=tk.W + tk.E + tk.S + tk.N, padx=10)
@@ -139,9 +147,10 @@ class View:
         self.canvas1 = tk.Canvas(self.frame1, width=500, height=300)
         self.canvas1.grid(sticky=tk.W + tk.E + tk.S + tk.N, padx=10, pady=10)
 
-        self.label21 = ttk.Label(self.frame2, text=self.model.qr_text, wraplength=250, anchor="w", justify="left")
-        self.button22 = ttk.Button(self.frame2, text="開始", padding=[5,15], style="font.TButton")
-        self.button23 = ttk.Button(self.frame2, text="終了", padding=[5,15], style="font.TButton")
+        # Labelはウイジェット変数で表示内容を制御する
+        self.label21 = ttk.Label(self.frame2, wraplength=250, anchor="w", justify="left")
+        self.button22 = ttk.Button(self.frame2, text="Clipboard", padding=[5, 15], style="font.TButton")
+        self.button23 = ttk.Button(self.frame2, text="Browser", padding=[5, 15], style="font.TButton")
         
         self.label21.grid(column=0, row=0, columnspan=3, padx=10, pady=10)
         self.button22.grid(column=3, row=0, padx=10, pady=10)
@@ -153,18 +162,15 @@ class View:
         self.display_image()
         
     def display_image(self):
-        # マーク付きのオリジナル画像を表示する
+        # カメラ画像を表示するため、RGBの入れ替えを行う
         self.img1 = cv2.cvtColor(self.model.compute_camera(), cv2.COLOR_BGR2RGB)
-        # 複数のインスタンスがある場合、インスタンをmasterで指示しないとエラーが発生する場合がある
+        # 複数のインスタンスがある場合、インスタンスをmasterで指示しないとエラーが発生する場合がある
         # エラー内容：image "pyimage##" doesn't exist
-        self.im1 = ImageTk.PhotoImage(image=Image.fromarray(self.img1), master=self.frame1)
-        self.canvas1.create_image(0, 0, anchor='nw', image=self.im1)
-
-        # ラベル更新
-        self.label21['text'] = cut_text(self.model.qr_text, 130)
+        self.img2 = ImageTk.PhotoImage(image=Image.fromarray(self.img1), master=self.frame1)
+        self.canvas1.create_image(0, 0, anchor='nw', image=self.img2)
 
         # QRコードの読み取り更新
-        self.master.after(100, self.display_image)
+        self.master.after(50, self.display_image)
 
 
 class Controller():
@@ -181,6 +187,9 @@ class Controller():
         self.master = master
         self.model = model
         self.view = view
+
+        # Labelで表示する内容のウイジェット変数の設定
+        self.view.label21.config(textvariable=self.model.qr_text_short)
 
     def press_start_button(self):
         print(self.model.qr_text)
@@ -215,7 +224,7 @@ class Application(tk.Frame):
         self.model = Model()
         
         master.geometry("550x480")
-        master.title("QRコード2クリップボード")
+        master.title("QR code to clipboard")
 
         # ウインドウサイズの変更不可
         master.resizable(width=False, height=False)
@@ -237,4 +246,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
