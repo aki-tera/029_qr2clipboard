@@ -1,12 +1,12 @@
 import unicodedata
 
+import cv2
+
 import tkinter as tk
 from tkinter import ttk
-from tkinter import font
 
 from PIL import Image, ImageTk
 
-import cv2
 from pyzbar.pyzbar import decode, ZBarSymbol
 
 import numpy as np
@@ -49,6 +49,7 @@ class Model:
 
         # QRコードの内容を保存する
         self.qr_text = "Please shoot QR Code on camera."
+        self.is_qr_detected = False
 
         # インスタンス変数の設定
         self.qr_text_short = tk.StringVar()
@@ -92,6 +93,7 @@ class Model:
                 # QRコードの内容を代入
                 self.qr_text = retval.decode('utf-8')
                 self.qr_text_short.set(cut_text(self.qr_text, 130))
+                self.is_qr_detected = True
 
                 # ポジションデータを取得
                 self.np_points = np.array(points)
@@ -134,7 +136,7 @@ class View:
         # ラベルフレーム用
         style.configure("font.TLabelframe", font=30)
         # ボタン用
-        style.configure("font.TButton", font=80)
+        style.configure("font.TButton", font=20)
 
         # フレーム設定
         self.frame1 = ttk.LabelFrame(self.master, text="Camera image", style="font.TLabelframe", relief=tk.GROOVE)
@@ -150,7 +152,7 @@ class View:
         # Labelはウイジェット変数で表示内容を制御する
         self.label21 = ttk.Label(self.frame2, wraplength=250, anchor="w", justify="left")
         self.button22 = ttk.Button(self.frame2, text="Clipboard", padding=[5, 15], style="font.TButton")
-        self.button23 = ttk.Button(self.frame2, text="Browser", padding=[5, 15], style="font.TButton")
+        self.button23 = ttk.Button(self.frame2, text="Quit", padding=[5, 15], style="font.TButton")
         
         self.label21.grid(column=0, row=0, columnspan=3, padx=10, pady=10)
         self.button22.grid(column=3, row=0, padx=10, pady=10)
@@ -191,8 +193,13 @@ class Controller():
         # Labelで表示する内容のウイジェット変数の設定
         self.view.label21.config(textvariable=self.model.qr_text_short)
 
-    def press_start_button(self):
-        print(self.model.qr_text)
+    def press_clipboard_button(self):
+        # クリップボードの内容をクリア
+        self.master.clipboard_clear()
+
+        if self.model.is_qr_detected is True:
+            # クリップボードへ内容登録
+            self.master.clipboard_append(self.model.qr_text)
 
     def press_close_button(self):
         # 終了処理
@@ -234,7 +241,7 @@ class Application(tk.Frame):
         self.controller = Controller(master, self.model, self.view)
 
         # ボタンのコマンド設定
-        self.view.button22["command"] = self.controller.press_start_button
+        self.view.button22["command"] = self.controller.press_clipboard_button
         self.view.button23["command"] = self.controller.press_close_button
 
 
