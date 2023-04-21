@@ -49,6 +49,7 @@ class Model:
 
         # QRコードの内容を保存する
         self.qr_text = "Please shoot QR Code on camera."
+        self.is_qr_detected = False
 
         # インスタンス変数の設定
         self.qr_text_short = tk.StringVar()
@@ -92,6 +93,7 @@ class Model:
                 # QRコードの内容を代入
                 self.qr_text = retval.decode('utf-8')
                 self.qr_text_short.set(cut_text(self.qr_text, 130))
+                self.is_qr_detected = True
 
                 # ポジションデータを取得
                 self.np_points = np.array(points)
