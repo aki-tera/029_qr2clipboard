@@ -136,7 +136,7 @@ class View:
         # ラベルフレーム用
         style.configure("font.TLabelframe", font=30)
         # ボタン用
-        style.configure("font.TButton", font=80)
+        style.configure("font.TButton", font=20)
 
         # フレーム設定
         self.frame1 = ttk.LabelFrame(self.master, text="Camera image", style="font.TLabelframe", relief=tk.GROOVE)
@@ -196,8 +196,10 @@ class Controller():
     def press_clipboard_button(self):
         # クリップボードの内容をクリア
         self.master.clipboard_clear()
-        # クリップボードへ内容登録
-        self.master.clipboard_append(self.model.qr_text)
+
+        if self.model.is_qr_detected is True:
+            # クリップボードへ内容登録
+            self.master.clipboard_append(self.model.qr_text)
 
     def press_close_button(self):
         # 終了処理
