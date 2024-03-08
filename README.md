@@ -5,6 +5,8 @@
 
 ## DEMO
 
+### You can use the camera on your PC to scan/read QR codes.
+
 ## Features
 
 ### specification
