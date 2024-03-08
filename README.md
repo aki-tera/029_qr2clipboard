@@ -1,5 +1,8 @@
 # 029_qr2clipboard
 
+![python3](https://img.shields.io/badge/type-python3-brightgreen)  ![passing](https://img.shields.io/badge/windows%20build-passing-brightgreen) ![MIT](https://img.shields.io/badge/license-MIT-brightgreen)  
+![OpenCV](https://img.shields.io/badge/libraly-OpenCV-blue) ![pyzbar](https://img.shields.io/badge/libraly-pyzbar-blue) ![Pillow](https://img.shields.io/badge/libraly-Pillow-blue)  ![NumPy](https://img.shields.io/badge/libraly-NumPy-blue) 
+
 ## DEMO
 
 ## Features
