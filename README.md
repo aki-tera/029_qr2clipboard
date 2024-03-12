@@ -18,6 +18,19 @@ Recently, it has become possible to convert URLs and text into QR codes on smart
 - The content of the read QR code can be copied to the clipboard.
 
 ## Requirement
+Python 3
+
+- I ran this program with the following execution environment.
+  - pytyon3.11(venv) + vscode
+  - Windows 11
+
+Python Library
+
+- cv2(OpenCV)
+- tkinter
+- PIL
+- pyzbar
+- numpy
 
 ## Usage
 
