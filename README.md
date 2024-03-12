@@ -9,6 +9,8 @@
 ![image](https://github.com/aki-tera/029_qr2clipboard/assets/44888139/d0900ca6-343d-4b7f-acf3-bdd957005607)
 
 ## Features
+You can read QR codes displayed on smartphones using a PC.  
+Recently, it has become possible to convert URLs and text into QR codes on smartphones, so it would be convenient to be able to read them on a PC.  
 
 ### specification
 
