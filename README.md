@@ -6,6 +6,7 @@
 ## DEMO
 
 ### You can use the camera on your PC to scan/read QR codes.
+![image](https://github.com/aki-tera/029_qr2clipboard/assets/44888139/d0900ca6-343d-4b7f-acf3-bdd957005607)
 
 ## Features
 
