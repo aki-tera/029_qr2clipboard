@@ -13,6 +13,9 @@ You can read QR codes displayed on smartphones using a PC.
 Recently, it has become possible to convert URLs and text into QR codes on smartphones, so it would be convenient to be able to read them on a PC.  
 
 ### specification
+- Reads QR codes.
+- If a QR code is successfully read, it will be surrounded by a blue frame.
+- The content of the read QR code can be copied to the clipboard.
 
 ## Requirement
 
