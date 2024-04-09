@@ -12,24 +12,29 @@ from pyzbar.pyzbar import decode, ZBarSymbol
 import numpy as np
 
 
-def cut_text(original_text, max_length):
+def cut_text(original_text, max_height, max_length):
     """Reduces the input string to the specified number of characters
 
     Args:
         original_text (str): the string to decrement
+        max_height (int): maximum number of line to output
         max_length (int): maximum number of characters to output
 
     Returns:
         _type_: the processed string
     """
-    char_count = 0
     new_text = ""
+    height_counter = 0
+    length_counter = 0
+
     for i in original_text:
-        char_count += (2 if unicodedata.east_asian_width(i) in "FWA" else 1)
-        if char_count <= max_length:
-            new_text += i
-        else:
-            break
+        new_text += i
+        length_counter += (2 if unicodedata.east_asian_width(i) in "FWA" else 1)
+        if length_counter >= max_length or i == "\n":
+            height_counter += 1
+            length_counter = 0
+            if height_counter > max_height:
+                break
     return new_text
 
 
@@ -92,7 +97,7 @@ class Model:
 
                 # QRコードの内容を代入
                 self.qr_text = retval.decode('utf-8')
-                self.qr_text_short.set(cut_text(self.qr_text, 130))
+                self.qr_text_short.set(cut_text(self.qr_text, 2, 35))
                 self.is_qr_detected = True
 
                 # ポジションデータを取得
@@ -150,7 +155,7 @@ class View:
         self.canvas1.grid(sticky=tk.W + tk.E + tk.S + tk.N, padx=10, pady=10)
 
         # Labelはウイジェット変数で表示内容を制御する
-        self.label21 = ttk.Label(self.frame2, wraplength=250, anchor="w", justify="left")
+        self.label21 = ttk.Label(self.frame2, wraplength=220, anchor="w", justify="left")
         self.button22 = ttk.Button(self.frame2, text="Clipboard", padding=[5, 15], style="font.TButton")
         self.button23 = ttk.Button(self.frame2, text="Quit", padding=[5, 15], style="font.TButton")
         
