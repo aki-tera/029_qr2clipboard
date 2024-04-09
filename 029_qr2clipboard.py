@@ -235,7 +235,7 @@ class Application(tk.Frame):
         # インスタンス化
         self.model = Model()
         
-        master.geometry("570x480")
+        master.geometry("550x480")
         master.title("QR code to clipboard")
 
         # ウインドウサイズの変更不可
