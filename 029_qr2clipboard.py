@@ -142,8 +142,8 @@ class View:
         self.frame1 = ttk.LabelFrame(self.master, text="Camera image", style="font.TLabelframe", relief=tk.GROOVE)
         self.frame2 = ttk.LabelFrame(self.master, text="QR Code Contents", style="font.TLabelframe", relief=tk.GROOVE)
 
-        self.frame1.grid(column=0, row=0, padx=10, pady=10)
-        self.frame2.grid(column=0, row=1, sticky=tk.W + tk.E + tk.S + tk.N, padx=10)
+        self.frame1.grid(column=0, row=0, padx=10, pady=10, sticky=tk.W + tk.E + tk.N + tk.S)
+        self.frame2.grid(column=0, row=1, sticky=tk.W + tk.E + tk.N + tk.S, padx=10)
 
         # フレーム1：オリジナル画像
         self.canvas1 = tk.Canvas(self.frame1, width=500, height=300)
