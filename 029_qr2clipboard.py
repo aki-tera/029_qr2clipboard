@@ -16,7 +16,7 @@ def cut_text(original_text, max_height, max_length):
         max_length (int): maximum number of characters to output
 
     Returns:
-        _type_: the processed string
+        str: the processed string
     """
     new_text = ""
     height_counter = 0
