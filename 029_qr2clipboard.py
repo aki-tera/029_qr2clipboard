@@ -18,19 +18,19 @@ def cut_text(original_text, max_height, max_length):
     Returns:
         str: the processed string
     """
-    new_text = ""
+    new_text = []
     height_counter = 0
     length_counter = 0
 
     for i in original_text:
-        new_text += i
+        new_text.append(i)
         length_counter += (2 if unicodedata.east_asian_width(i) in "FWA" else 1)
         if length_counter >= max_length or i == "\n":
             height_counter += 1
             length_counter = 0
             if height_counter > max_height:
                 break
-    return new_text
+    return ''.join(new_text)
 
 
 class Model:
