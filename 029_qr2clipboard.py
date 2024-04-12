@@ -1,14 +1,9 @@
 import unicodedata
-
 import cv2
-
 import tkinter as tk
 from tkinter import ttk
-
 from PIL import Image, ImageTk
-
 from pyzbar.pyzbar import decode, ZBarSymbol
-
 import numpy as np
 
 
