@@ -56,9 +56,9 @@ class Model:
         self.qr_text_short.set(self.qr_text)
 
         # カメラ起動
-        self.open_camera()
+        self.start_camera()
 
-    def open_camera(self):
+    def start_camera(self):
         # カメラ起動
         self.aruco = cv2.aruco
         self.dictionary = self.aruco.getPredefinedDictionary(self.aruco.DICT_4X4_50)
