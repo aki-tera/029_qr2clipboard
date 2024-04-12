@@ -139,26 +139,26 @@ class View:
         style.configure("font.TButton", font=20)
 
         # フレーム設定
-        self.frame1 = ttk.LabelFrame(self.master, text="Camera image", style="font.TLabelframe", relief=tk.GROOVE)
-        self.frame2 = ttk.LabelFrame(self.master, text="QR Code Contents", style="font.TLabelframe", relief=tk.GROOVE)
+        self.camera_frame = ttk.LabelFrame(self.master, text="Camera image", style="font.TLabelframe", relief=tk.GROOVE)
+        self.qrcode_frame = ttk.LabelFrame(self.master, text="QR Code Contents", style="font.TLabelframe", relief=tk.GROOVE)
 
-        self.frame1.grid(column=0, row=0, padx=10, pady=10, sticky=tk.W + tk.E + tk.N + tk.S)
-        self.frame2.grid(column=0, row=1, sticky=tk.W + tk.E + tk.N + tk.S, padx=10)
+        self.camera_frame.grid(column=0, row=0, padx=10, pady=10, sticky=tk.W + tk.E + tk.N + tk.S)
+        self.qrcode_frame.grid(column=0, row=1, sticky=tk.W + tk.E + tk.N + tk.S, padx=10)
 
         # フレーム1：オリジナル画像
-        self.canvas1 = tk.Canvas(self.frame1, width=500, height=300)
-        self.canvas1.grid(sticky=tk.W + tk.E + tk.S + tk.N, padx=10, pady=10)
+        self.camera_canvas = tk.Canvas(self.camera_frame, width=500, height=300)
+        self.camera_canvas.grid(sticky=tk.W + tk.E + tk.S + tk.N, padx=10, pady=10)
 
         # Labelはウイジェット変数で表示内容を制御する
-        self.label21 = ttk.Label(self.frame2, wraplength=220, anchor="w", justify="left")
-        self.button22 = ttk.Button(self.frame2, text="Clipboard", padding=[5, 15], style="font.TButton")
-        self.button23 = ttk.Button(self.frame2, text="Quit", padding=[5, 15], style="font.TButton")
+        self.qrcode_label = ttk.Label(self.qrcode_frame, wraplength=220, anchor="w", justify="left")
+        self.clipboard_button = ttk.Button(self.qrcode_frame, text="Clipboard", padding=[5, 15], style="font.TButton")
+        self.close_button = ttk.Button(self.qrcode_frame, text="Quit", padding=[5, 15], style="font.TButton")
         
-        self.label21.grid(column=0, row=0, columnspan=3, padx=10, pady=10)
-        self.button22.grid(column=3, row=0, padx=10, pady=10)
-        self.button23.grid(column=4, row=0, padx=10, pady=10)
+        self.qrcode_label.grid(column=0, row=0, columnspan=3, padx=10, pady=10)
+        self.clipboard_button.grid(column=3, row=0, padx=10, pady=10)
+        self.close_button.grid(column=4, row=0, padx=10, pady=10)
         
-        self.frame2.grid_columnconfigure(1, weight=1)
+        self.qrcode_frame.grid_columnconfigure(1, weight=1)
 
         # ディスプレイ表示
         self.display_image()
@@ -168,8 +168,8 @@ class View:
         self.img1 = cv2.cvtColor(self.model.get_camera_frame(), cv2.COLOR_BGR2RGB)
         # 複数のインスタンスがある場合、インスタンスをmasterで指示しないとエラーが発生する場合がある
         # エラー内容：image "pyimage##" doesn't exist
-        self.img2 = ImageTk.PhotoImage(image=Image.fromarray(self.img1), master=self.frame1)
-        self.canvas1.create_image(0, 0, anchor='nw', image=self.img2)
+        self.img2 = ImageTk.PhotoImage(image=Image.fromarray(self.img1), master=self.camera_frame)
+        self.camera_canvas.create_image(0, 0, anchor='nw', image=self.img2)
 
         # QRコードの読み取り更新
         self.master.after(50, self.display_image)
@@ -191,7 +191,7 @@ class Controller():
         self.view = view
 
         # Labelで表示する内容のウイジェット変数の設定
-        self.view.label21.config(textvariable=self.model.qr_text_short)
+        self.view.qrcode_label.config(textvariable=self.model.qr_text_short)
 
     def press_clipboard_button(self):
         # クリップボードの内容をクリア
@@ -241,8 +241,8 @@ class Application(tk.Frame):
         self.controller = Controller(master, self.model, self.view)
 
         # ボタンのコマンド設定
-        self.view.button22["command"] = self.controller.press_clipboard_button
-        self.view.button23["command"] = self.controller.press_close_button
+        self.view.clipboard_button["command"] = self.controller.press_clipboard_button
+        self.view.close_button["command"] = self.controller.press_close_button
 
 
 def main():
