@@ -77,7 +77,7 @@ class Model:
         # カメラリソース解放
         self.cap.release()
 
-    def compute_camera(self):
+    def get_camera_frame(self):
         # cv2の処理をすべて実施
 
         # ビデオキャプチャから画像を取得
@@ -85,10 +85,10 @@ class Model:
 
         if ret:
             # QRコードのでコード
-            value = decode(frame, symbols=[ZBarSymbol.QRCODE])
+            values = decode(frame, symbols=[ZBarSymbol.QRCODE])
 
-            if value != []:
-                retval, decoded_info, size_info, points, _, _ = value[0]
+            if values != []:
+                retval, decoded_info, size_info, points, _, _ = values[0]
 
                 # QRコードの内容を代入
                 self.qr_text = retval.decode('utf-8')
@@ -103,10 +103,10 @@ class Model:
 
         # sizeを取得
         # (縦、横、色)
-        Height, Width = frame.shape[:2]
+        height, width = frame.shape[:2]
 
         # 処理できる形に変換
-        img1 = cv2.resize(frame, (500, int(Height * (500 / Width))))
+        img1 = cv2.resize(frame, (500, int(height * (500 / width))))
 
         return img1
 
@@ -165,7 +165,7 @@ class View:
         
     def display_image(self):
         # カメラ画像を表示するため、RGBの入れ替えを行う
-        self.img1 = cv2.cvtColor(self.model.compute_camera(), cv2.COLOR_BGR2RGB)
+        self.img1 = cv2.cvtColor(self.model.get_camera_frame(), cv2.COLOR_BGR2RGB)
         # 複数のインスタンスがある場合、インスタンスをmasterで指示しないとエラーが発生する場合がある
         # エラー内容：image "pyimage##" doesn't exist
         self.img2 = ImageTk.PhotoImage(image=Image.fromarray(self.img1), master=self.frame1)
