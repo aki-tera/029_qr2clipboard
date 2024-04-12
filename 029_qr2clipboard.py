@@ -71,7 +71,7 @@ class Model:
         # self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
     
-    def release_caremra(self):
+    def stop_camera(self):
         """release webcam resource.
         """
         # カメラリソース解放
@@ -204,7 +204,7 @@ class Controller():
     def press_close_button(self):
         # 終了処理
         # カメラリソース解放
-        self.model.release_caremra()
+        self.model.stop_camera()
         # ウイジェットの終了
         self.master.destroy()
 
