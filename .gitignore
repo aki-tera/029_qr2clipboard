@@ -2,6 +2,7 @@
 __pycache__
 test
 data
+.vscode
 
 # 不要なファイル
 .gitignore
